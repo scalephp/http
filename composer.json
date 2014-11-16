@@ -1,0 +1,22 @@
+{
+    "name":        "scalephp/http",
+    "description": "HTTP Request interface.",
+    "homepage":    "https://scalephp.github.io/http/",
+    "license":     "MIT",
+    "authors": [
+            {
+                "name":     "scalephp",
+                "role":     "developer",
+                "homepage": "https://scalephp.github.io/http/"
+            }
+    ],
+    "support": {
+            "issues": "https://github.com/scalephp/http/issues",
+            "source": "https://github.com/scalephp/http"
+    },
+    "autoload": {
+            "psr-4": {
+                    "Scale\\Http\\": "classes/"
+            }            
+    }
+}
