@@ -1,33 +1,27 @@
-<?php
+<?php namespace Scale\Http\HTTP;
 
-class Router {
+use Scale\Kernel\Core\RuntimeException;
 
-    public static function route() {
-
+class Router
+{
+    public function route()
+    {
         $method = $_SERVER['REQUEST_METHOD'];
 
-        if ($method == 'POST')
-        {
+        if ($method == 'POST') {
             $data = $_POST;
-        }
-        elseif ($method == 'GET')
-        {
+        } elseif ($method == 'GET') {
             $data = $_GET;
-        }
-        else
-        {
-            throw new Exception('Invalid Request');
+        } else {
+            throw new RuntimeException('Invalid Request');
         }
 
-        $route = NULL;
-
+        $route = null;
         // Load the configured routes
         $routes = require App\PATH.'/config/routes.php';
 
         if (isset($data['location'])) {
-
-            if (isset($routes[$data['location']])){
-
+            if (isset($routes[$data['location']])) {
                 $route = $routes[$data['location']];
             }
         }
@@ -40,7 +34,7 @@ class Router {
         $input = array();
 
         foreach ($route['params'] as $param) {
-            $input[$param] = isset($data[$param]) ? $data[$param] : NULL;
+            $input[$param] = isset($data[$param]) ? $data[$param] : null;
         }
 
         $route['params'] = $input;
