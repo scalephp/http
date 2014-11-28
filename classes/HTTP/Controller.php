@@ -14,41 +14,41 @@ class Controller
 
     /**
      *
-     * @var RequestInterface 
+     * @var RequestInterface
      */
     protected $request;
 
     /**
      *
-     * @var ResponseInterface 
+     * @var ResponseInterface
      */
     protected $response;
-    
+
     /**
      *
-     * @var string 
+     * @var string
      */
     protected $action;
 
 
     /**
-     * 
+     *
      */
     public function before()
     {
 
     }
-    
+
     /**
-     * 
+     *
      */
     public function after()
     {
-        
+
     }
-    
+
     /**
-     * 
+     *
      * @param string $action
      * @return mixed
      */
@@ -63,7 +63,7 @@ class Controller
     }
 
     /**
-     * 
+     *
      * @param type $request
      * @return Controller
      */
@@ -75,10 +75,10 @@ class Controller
             $this->response = $request;
             return $this;
         }
-    } 
-    
+    }
+
     /**
-     * 
+     *
      * @param type $response
      * @return Controller
      */
@@ -91,9 +91,9 @@ class Controller
             return $this;
         }
     }
-    
+
     /**
-     * 
+     *
      * @param string            $action
      * @param RequestInterface  $request
      * @param ResponseInterface $response

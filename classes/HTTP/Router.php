@@ -1,7 +1,6 @@
 <?php namespace Scale\Http\HTTP;
 
 use Closure;
-use ReflectionMethod;
 use Scale\Kernel\Core\Container;
 use Scale\Kernel\Interfaces\ExecutorInterface;
 use Scale\Http\HTTP\IO\RequestInterface;
@@ -18,15 +17,15 @@ class Router extends Container implements ExecutorInterface
     public function __construct(
         RequestInterface $request = null,
         ResponseInterface $response = null,
-        Closure $controller = null    
+        Closure $controller = null
     ) {
         parent::__construct();
-        
+
         $this->request = $request;
         $this->response = $response;
         $this->controller = $controller;
     }
-    
+
     /**
      *
      * @return Router
@@ -38,9 +37,16 @@ class Router extends Container implements ExecutorInterface
 
         // Only allowed params go through
         $this->request->filterInput($this->route['params']);
-        
+
         // Create a new instance of the controller
         $this->buildController($this->route['controller']);
+
+        // Injects the controller dependencies
+        $this->getInstance('controller')->prepare(
+            $this->route['action'],
+            $this->request,
+            $this->response
+        );
 
         return $this;
     }
@@ -70,12 +76,17 @@ class Router extends Container implements ExecutorInterface
 
     /**
      * Executes the controller action
-     * 
+     *
      * @return ResponseInterface
      */
     public function execute()
     {
-        return (new ReflectionMethod($this->controller, $this->route['action']))
-            ->invoke($this->controller, $this->request);
+        $response = $this->controller->execute();
+
+        foreach ($response->headers() as $key => $value) {
+            header("$key: $value");
+        }
+
+        print $response->body();
     }
 }
