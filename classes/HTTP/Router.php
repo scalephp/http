@@ -1,67 +1,80 @@
 <?php namespace Scale\Http\HTTP;
 
 use Closure;
+use Scale\Kernel\Core\Container;
 use Scale\Kernel\Interfaces\ExecutorInterface;
-use Scale\Kernel\Interfaces\BuilderInterface;
-use Scale\Kernel\Core\Builders;
-use Scale\Kernel\Core\RuntimeException;
 use Scale\Http\HTTP\IO\RequestInterface;
+use Scale\Http\HTTP\IO\ResponseInterface;
+use Scale\Kernel\Core\RuntimeException;
 
-class Router implements ExecutorInterface, BuilderInterface
+class Router extends Container implements ExecutorInterface
 {
-    use Builders;
-
+    /**
+     *
+     * @param RequestInterface $request
+     * @param Closure $controller
+     */
     public function __construct(
-        $uri = true,
-        $params = true,
         RequestInterface $request = null,
-        Closure $controller = null
+        ResponseInterface $response = null,
+        Closure $controller = null    
     ) {
-        $this->uri = $uri;
-        $this->params = $params;
+        parent::__construct();
+        
         $this->request = $request;
+        $this->response = $response;
         $this->controller = $controller;
     }
-
+    
+    /**
+     *
+     * @return Router
+     */
     public function prepare()
     {
-        // Autodetect task name?
-        $this->uri = ($this->uri === true) ? $this->request->uri() : $this->uri;
+        // Find route in config
+        $this->route = $this->getRoute();
 
-        // Get command line params
-        $this->params = ($this->params === true) ? $this->request->params() : $this->params;
-
-        $this->route = $this->getRoute($this->uri, $this->params);
-
-        // Create a new instance of the task
-        $this->controller = $this->controller($this->route['controller']);
+        // Only allowed params go through
+        $this->request->filterInput($this->route['params']);
         
+        // Create a new instance of the controller
+        $this->buildController($this->route['controller']);
+
         return $this;
     }
 
-    public function getRoute($uri, $params)
+    /**
+     *
+     * @return array
+     * @throws RuntimeException
+     */
+    protected function getRoute()
     {
-        $routes = require \App\PATH.'/etc/routes.php';
+        $routes = $this->appConfig('routes');
+
+        $uri = $this->request->uri();
 
         if (isset($routes[$uri])) {
+
             $route = $routes[$uri];
+
         } else {
+
             throw new RuntimeException('404');
         }
-
-        $input = array();
-
-        foreach ($route['params'] as $param) {
-            $input[$param] = isset($params[$param]) ? $params[$param] : null;
-        }
-
-        $route['input'] = $input;
 
         return $route;
     }
 
+    /**
+     * Executes the controller action
+     * 
+     * @return ResponseInterface
+     */
     public function execute()
     {
-        $this->controller->{$this->route['action']}($this->route['input']);
+        return (new \ReflectionMethod($this->controller, $this->route['action']))
+            ->invoke($controller, $this->request);
     }
 }

@@ -2,6 +2,7 @@
 
 use Scale\Http\HTTP\IO\RequestInterface;
 use Scale\Kernel\Core\Environment;
+use Scale\Kernel\Core\RuntimeException;
 
 class Request implements RequestInterface
 {
@@ -9,6 +10,7 @@ class Request implements RequestInterface
     protected $uri;
     protected $params;
     protected $method;
+    protected $input;
 
     /**
      *
@@ -31,37 +33,7 @@ class Request implements RequestInterface
         $this->method = $this->env->getServer('REQUEST_METHOD');
 
         $this->body = file_get_contents('php://input');
-    }
 
-    /**
-     *
-     * @param  string $name
-     * @return string
-     * @throws RuntimeException
-     */
-    public function param($name)
-    {
-        if ($this->method === 'POST') {
-            return filter_input(INPUT_POST, $name, FILTER_SANITIZE_STRING);
-        } elseif ($this->method === 'GET') {
-            return filter_input(INPUT_GET, $name, FILTER_SANITIZE_STRING);
-        } else {
-            throw new RuntimeException('Invalid Param Request');
-        }
-    }
-
-    public function uri()
-    {
-        return $this->uri;
-    }
-
-    /**
-     *
-     * @return array
-     * @throws RuntimeException
-     */
-    public function params()
-    {
         if ($this->method === 'POST') {
             $input = INPUT_POST;
         } elseif ($this->method === 'GET') {
@@ -69,6 +41,51 @@ class Request implements RequestInterface
         } else {
             throw new RuntimeException('Invalid Param Request');
         }
-        return filter_input_array($input, FILTER_SANITIZE_STRING);
+        
+        $this->input = filter_input_array($input, FILTER_SANITIZE_STRING);
+    }
+
+    /**
+     * 
+     * @param array $keys
+     */
+    public function filterInput($keys)
+    {
+        $input = [];
+        
+        foreach ($keys as $key) {
+            
+            $input[$key] = $this->param($key);
+        }
+        
+        $this->input = $input;
+    }
+
+    /**
+     *
+     * @param  string $name
+     * @return string
+     */
+    public function param($name)
+    {
+        return isset($this->input[$name]) ? $this->input[$name] : null;
+    }
+
+    /**
+     * 
+     * @return type
+     */
+    public function params()
+    {
+        return $this->input;
+    }
+
+    /**
+     * 
+     * @return string
+     */
+    public function uri()
+    {
+        return $this->uri;
     }
 }
