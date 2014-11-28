@@ -1,6 +1,7 @@
 <?php namespace Scale\Http\HTTP;
 
 use Closure;
+use ReflectionMethod;
 use Scale\Kernel\Core\Container;
 use Scale\Kernel\Interfaces\ExecutorInterface;
 use Scale\Http\HTTP\IO\RequestInterface;
@@ -74,7 +75,7 @@ class Router extends Container implements ExecutorInterface
      */
     public function execute()
     {
-        return (new \ReflectionMethod($this->controller, $this->route['action']))
-            ->invoke($controller, $this->request);
+        return (new ReflectionMethod($this->controller, $this->route['action']))
+            ->invoke($this->controller, $this->request);
     }
 }
