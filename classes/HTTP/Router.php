@@ -33,17 +33,17 @@ class Router extends Container implements ExecutorInterface
     public function prepare()
     {
         // Find route in config
-        $this->route = $this->getRoute();
+        $route = $this->getRoute();
 
         // Only allowed params go through
-        $this->request->filterInput($this->route['params']);
+        $this->request->filterInput($route['params']);
 
         // Create a new instance of the controller
-        $this->buildController($this->route['controller']);
+        $this->buildController($route['controller']);
 
         // Injects the controller dependencies
         $this->getInstance('controller')->prepare(
-            $this->route['action'],
+            $route['action'],
             $this->request,
             $this->response
         );
