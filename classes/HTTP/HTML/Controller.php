@@ -25,7 +25,7 @@ class Controller extends BaseController
      */
     public function renderView($name, $params = array(), $return = false)
     {
-        $view = $this->view($name, $params);
+        $view = $this->view->__invoke($name, $params, \App\PATH);
 
         if ($return) {
             return $view->render(true);

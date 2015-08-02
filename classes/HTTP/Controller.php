@@ -70,9 +70,9 @@ class Controller
     public function request($request = null)
     {
         if ($request === null) {
-            return $this->response;
+            return $this->request;
         } else {
-            $this->response = $request;
+            $this->request = $request;
             return $this;
         }
     }

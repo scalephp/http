@@ -5,8 +5,8 @@ use Scale\Http\HTTP\IO\Provider\Response;
 
 class ResponseFactory
 {
-    public function factory(Environment $env)
+    public function factory(Environment $environment)
     {
-        return new Response($env);
+        return new Response($environment);
     }
 }

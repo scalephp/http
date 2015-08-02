@@ -5,17 +5,15 @@ use Scale\Kernel\Core\Environment;
 
 class Response implements ResponseInterface
 {
-    protected $env;
     protected $headers = [];
     protected $body = '';
 
     /**
      *
-     * @param Environment $env
+     * @param Environment $environment
      */
-    public function __construct(Environment $env)
+    public function __construct()
     {
-        $this->env = $env;
         $this->setup();
     }
 
@@ -59,4 +57,15 @@ class Response implements ResponseInterface
         }
     }
 
+    /**
+     *
+     */
+    public function render()
+    {
+        foreach ($this->headers as $key => $value) {
+            header("$key: $value");
+        }
+
+        print $this->body();
+    }
 }

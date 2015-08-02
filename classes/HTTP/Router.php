@@ -28,6 +28,17 @@ class Router extends Container implements ExecutorInterface
 
     /**
      *
+     * @param RequestInterface $request
+     * @return Router
+     */
+    public function setInput($request)
+    {
+        $this->request = $request;
+        return $this;
+    }
+
+    /**
+     *
      * @return Router
      */
     public function prepare()
@@ -68,7 +79,7 @@ class Router extends Container implements ExecutorInterface
 
         } else {
 
-            throw new RuntimeException('404');
+            throw new RuntimeException('404 '.htmlspecialchars($uri).' not found');
         }
 
         return $route;
@@ -81,12 +92,6 @@ class Router extends Container implements ExecutorInterface
      */
     public function execute()
     {
-        $response = $this->controller->execute();
-
-        foreach ($response->headers() as $key => $value) {
-            header("$key: $value");
-        }
-
-        print $response->body();
+        return $this->controller->execute();
     }
 }

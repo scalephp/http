@@ -6,21 +6,21 @@ use Scale\Kernel\Core\RuntimeException;
 
 class Request implements RequestInterface
 {
-    protected $env;
-    protected $uri;
-    protected $params;
-    protected $method;
-    protected $input;
+    public $environment;
+    public $uri;
+    public $method;
+    public $input;
 
     /**
      *
-     * @param Environment $env
+     * @param Environment $environment
      */
-    public function __construct(Environment $env)
+    public function __construct(Environment $environment = null)
     {
-        $this->env = $env;
-
-        $this->setup();
+        if ($environment) {
+            $this->env = $environment;
+            $this->setup();
+        }
     }
 
     /**
@@ -35,14 +35,14 @@ class Request implements RequestInterface
         $this->body = file_get_contents('php://input');
 
         if ($this->method === 'POST') {
-            $input = INPUT_POST;
+            $input = $_POST;
         } elseif ($this->method === 'GET') {
-            $input = INPUT_GET;
+            $input = $_GET;
         } else {
-            throw new RuntimeException('Invalid Param Request');
+            $input = [];
         }
         
-        $this->input = filter_input_array($input, FILTER_SANITIZE_STRING);
+        $this->input = $input;
     }
 
     /**

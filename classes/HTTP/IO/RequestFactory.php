@@ -5,8 +5,8 @@ use Scale\Http\HTTP\IO\Provider\Request;
 
 class RequestFactory
 {
-    public function factory(Environment $env)
+    public function factory(Environment $environment)
     {
-        return new Request($env);
+        return new Request($environment);
     }
 }
